@@ -1,19 +1,35 @@
 var createError = require('http-errors');
+var fs = require('fs');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+
+const morganBody = require("morgan-body")
+const bodyParser = require("body-parser")
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+const log = fs.createWriteStream(
+  path.join(__dirname, "logs", "express.log"), { flags: "a" }
+);
+
 var app = express();
+
+app.use(bodyParser.json());
+
+morganBody(app, {
+  stream: log,
+  noColors: true,
+  logAllReqHeader:true,
+  logRequestBody:false,
+  logResponseBody:false,
+  logAllResHeader: true});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
