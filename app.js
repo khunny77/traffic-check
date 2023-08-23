@@ -9,6 +9,13 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+app.use('/', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+ });
+
+
 const endMiddleware = (req, res, next) => {
   if (req.headers && req.headers.referer) {
     console.log(`Time: ${new Date()}, Request URL: ${req.originalUrl}, referer: ${req.headers.referer}`);
