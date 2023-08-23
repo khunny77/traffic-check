@@ -1,30 +1,25 @@
 var createError = require('http-errors');
-var fs = require('fs');
 var express = require('express');
 var path = require('path');
+var logger = require('morgan');
 var cookieParser = require('cookie-parser');
-
-const morganBody = require("morgan-body")
-const bodyParser = require("body-parser")
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-const log = fs.createWriteStream(
-  path.join(__dirname, "logs", "express.log"), { flags: "a" }
-);
-
 var app = express();
 
-app.use(bodyParser.json());
+const endMiddleware = (req, res, next) => {
+  if (req.headers && req.headers.referer) {
+    console.log(`Time: ${new Date()}, Request URL: ${req.originalUrl}, referer: ${req.headers.referer}`);
+  }
 
-morganBody(app, {
-  stream: log,
-  noColors: true,
-  logAllReqHeader:true,
-  logRequestBody:false,
-  logResponseBody:false,
-  logAllResHeader: true});
+  next();
+};
+
+app.use(endMiddleware);
+app.use(logger('dev'));
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
